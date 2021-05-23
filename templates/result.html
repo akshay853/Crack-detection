@@ -1,0 +1,22 @@
+<html>
+<head>
+</head>
+
+<!-- <label>{{result}}</label> -->
+
+    <table border="2px solid black">
+        <tr>
+            <th>Filename</th>
+            <th>Result</th>
+        </tr>
+        {% for key, values in result.items() %}
+            <tr>
+               <td>{{key}}</td>
+               <td>{{values}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <form method="POST">
+        <input type="submit" value="Details! (update to Database)">
+    </form>
+</html>
