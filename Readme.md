@@ -1,10 +1,13 @@
 # crack detection on building walls
 
 # project structure
-|- model\n 
-|-templates\n
-|-statics\n
-|-main.py\n
+|- model
+|
+|-templates
+|
+|-statics
+|
+|-main.py
 
 model directory contain model used. 
 templates contains HTML files, css , js , other designing part are in static directory.
