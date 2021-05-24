@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request,redirect
 from werkzeug.utils import secure_filename
 import os
+from collections import Counter
 
 
 crackResult = {}
@@ -110,9 +111,12 @@ def predict():
         crackResult[list_images] = class_name[y_pred]
 
     saveResult(crackResult)
+    lencrack = 0
+    for value in crackResult.values():
+        if(value == "crack found"):
+            lencrack = lencrack+1
     
-    return render_template("result.html",result = crackResult)
-
+    return render_template("result.html",result = crackResult,length = lencrack)
 
 @app.route('/cam', methods = ['POST'])
 def cam():
@@ -153,9 +157,13 @@ def cam():
     saveResult(crackResultFromcam)
     cap.release()
     cv2.destroyAllWindows()
+    
+    lencrack = 0
+    for value in crackResultFromcam.values():
+        if(value == "crack found"):
+            lencrack = lencrack+1
 
-
-    return render_template("result.html",result = crackResultFromcam)
+    return render_template("result.html",result = crackResultFromcam,length = lencrack)
 
 @app.route("/pie", methods= ['GET'])
 def pie():
@@ -185,6 +193,48 @@ def piecam():
 @app.route("/forgetpassword")
 def forget():
     return render_template("forgetpassword.html")
+
+@app.route("/database" ,methods = ['POST'])
+def database():
+    count = request.form['count']
+    try:
+        import mysql.connector
+        from datetime import date
+        Todaydate = date.today().strftime("%y/%m/%d")
+
+        try:
+            mysqlConnection =  mysql.connector.connect(host = "localhost", user = "root", password = "password",database = "UserDetails")
+            mysqlCursor = mysqlConnection.cursor()
+            mysqlCursor.execute("insert into crackResult (Date,Crack_Count) values(%s,%s)",(Todaydate,count))
+            mysqlConnection.commit()
+            return """<html><script>alert("updated succesfully")</script> <h1>
+            Data has updated to Database successfully go back to previous </h1>
+            </html"""
+        except:
+            pass
+    except:
+        pass
+    return "<html><h1>update failed</h1></html"
+
+@app.route("/showDB")
+def showdb():
+    try:
+        import mysql.connector
+
+        try:
+            mysqlConnection =  mysql.connector.connect(host = "localhost", user = "root", password = "password",database = "UserDetails")
+            mysqlCursor = mysqlConnection.cursor()
+            mysqlCursor.execute("select * from crackResult")
+            result = mysqlCursor.fetchall()
+            return render_template("ShowDB.html",data = result)
+        except:
+            pass
+    except:
+        pass
+    return "<html><h1>failed</h1></html"
+    
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
